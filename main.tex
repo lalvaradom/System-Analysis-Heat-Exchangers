@@ -2,10 +2,12 @@
 \documentclass[12pt,letterpaper]{article}     % Tipo de documento y otras especificaciones
 \usepackage[utf8]{inputenc}           % Para escribir tildes y eñes
 \usepackage[spanish]{babel}                   % Para que los títulos de figuras, tablas y otros estén en español
+\usepackage{mdwlist}
 \usepackage{multirow}
 \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}					% Cambiar nombre a tablas
 \addto\captionsspanish{\renewcommand{\listtablename}{Índice de tablas}}		% Cambiar nombre a lista de tablas
 \usepackage{geometry}
+\usepackage{lipsum}
 \geometry{left=30mm,right=30mm,top=25mm,bottomhttps://www.overleaf.com/project/5d682739555c82408dd28ba3=25mm} % Tamaño del área de escritura de la página
 
 \usepackage{ucs}
@@ -28,9 +30,18 @@
 \usepackage{fancyhdr}	% Para manejar los encabezados y pies de página
 \usepackage{adjustbox}
 \pagestyle{fancy}		% Contenido de los encabezados y pies de pagina
-
+\usepackage{matlab}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{pdfpages}
 
+
+\usepackage{lastpage}
+\usepackage{fancyhdr}	% Para manejar los encabezados y pies de página
+\pagestyle{fancy}		% Contenido de los encabezados y pies de pagina
+\usepackage{multicol}
+%\usepackage{subfigure}
+\usepackage{textcomp}
+\usepackage{amsfonts}     % y mejoran la escritura de fórmulas y símbolos matemáticos.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \lhead{IE0409 - Análisis de Sistemas}
@@ -42,6 +53,7 @@
 \cfoot{\thepage\ }
 \rfoot{Universidad de Costa Rica}
 \usepackage{enumerate}
+\usepackage{enumitem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -111,24 +123,42 @@ Se interpreta el comportamiento del sistema a través de los resultados de la si
 
 \section*{Nomenclatura}
 
-\begin{itemize}
-\item ${ q }$ : Velocidad de flujo de calor
-\item $Q$ : Flujo de calor
-\item $T$ : Temperatura
-\item $A$: Área
-\item $L$ : Ancho
-\item $G$ : Irradiación
-\item $J$ : Reflexión de radiación
-\item ${  \sigma }$ :  Constante de Stefan-Boltzmann
-\item ${ E }_{ b }$ : Potencia del cuerpo negro
-\item $\epsilon$ : Emisividad
-\item $\alpha$ : Absorbancia
-\item ${ Re }$ : Número de Reynolds
-\item ${ h }_{ c }$ : Coeficiente de transferencia de calor por convección
-\item ${Nu }$ : Número de Nusselt
-\item $Pr$ : Número de Prandtl
-\item ${ D}_{h }$: Diámetro hidráulico
-\end{itemize}
+\begin{description}[labelindent=1cm,labelwidth=2.25cm,align=left]
+\item [${ q }$]  Velocidad de flujo de calor
+\item [$Q$] Flujo de calor
+\item [$T$] Temperatura
+\item [$A$] Área
+\item [$L$] Ancho
+\item [$G$]  Irradiación
+\item [$J$] Reflexión de radiación
+\item [${  \sigma }$]  Constante de Stefan-Boltzmann
+\item [${ E }_{ b }$] Potencia del cuerpo negro
+\item [$\epsilon$] Emisividad
+\item [$\alpha$] Absorbancia
+\item [${ Re }$] Número de Reynolds
+\item [${ h }_{ c }$] Coeficiente de transferencia de calor por convección
+\item [${Nu }$]  Número de Nusselt
+\item [$Pr$] Número de Prandtl
+\item [${ D}_{h }$] Diámetro hidráulico
+\item [${ m }$] Flujo neto de la masa
+\item [${ \rho}$] Densidad del liquido
+\item [${ V }$] Volumen del intercambiador
+\item [${ T(t) }$] Temperatura del líquido en el intercambiador
+\item [${ T_i (t) }$] Temperatura del flujo que entra al tanque
+\item [${ T_s(t) }$] Temperatura del líquido en el serpentín
+\item [${ \lambda }$] Flujo de corriente del líquido
+\item [${ w(t) }$] Flujo del vapor
+\item [${ C_M }$] Capacidad calórica del metal del serpentín
+\item [${ C_V }$] Capacidad calórica del líquido en el intercambiador
+\item [${ C_p }$] Capacidad calórica de la masa que se quiere calentar
+
+
+
+
+
+
+\end{description}
+
 %
 \newpage
 %
@@ -209,7 +239,9 @@ James Prescott Joules (1818-1889) finalmente establece un vínculo directo entre
 
 
 El intercambiador de calor de placas apareció en la década de 1920, en un aporte y se aplicó a la industria alimentaria, sucesivamente continúo el desarrollo hasta que en los años 60s, debido al avance tecnológico con mayor necesidad de gestionar el calor, la termometría toma mayor auge.\\
-Posteriormente, los nuevos retos de mayor eficiencia en este campo  aunado a la necesidad de ahorro energético conllevan al desarrollo de dispositivo cada vez más compactos y eficientes.
+Posteriormente, los nuevos retos de mayor eficiencia en este campo  aunado a la necesidad de ahorro energético conllevan al desarrollo de dispositivo cada vez más compactos y eficientes. 
+4
+
 
 \subsection{Intercambiadores de Calor}
 
@@ -694,59 +726,482 @@ Turbulento: Nu_{x} = 0.453Re_{x}^{0.8}Pr^{1/3}
 \end{equation}
 \end{enumerate}
 
+\subsection{Propiedades elementales de un sistema hidráulico}
+
+Un sistema  hidráulico tiene cinco parámetros de importancia: la presión, la masa del flujo, temperatura, densidad y volumen del flujo.
+Para fluidos incompresibles (volumen se mantiene constante), según la ley de conservación de la masa tiene que:
+
+\begin{equation}
+m=\int \rho fdt     
+\label{eq:flujo}
+\end{equation}
+
+donde en \ref{eq:flujo}, m es el flujo neto de la masa, $\rho$ es la densidad del fluido, además $dV/dt = f = f_i - f_o$ es el volumen neto del flujo, por lo tanto:
+
+\begin{equation}
+\frac{dm}{dt} = \rho \frac{dV}{dt} = \rho f     
+\label{eq:flujo}
+\end{equation}
+
 \newpage
 \section{Modelo matemático de un proceso que incluye un serpentín con intercambiador }
 
-\subsection{Análisis de un Intercambiador de calor: Serpentín}
+\subsection{Descripción de funcionamiento}
 
-En un proceso de calentamiento típico de calentamiento de un fluido a través de un intercambiador de calor por medio de un vapor que circula en un serpentín contenido en un tanque.
+El modelo matemático siguiente se basa en un proceso típico del calentamiento de un líquido que fluye a través de un intercambiador de calor, mnediante un vapor que se mueve por un serpentín instalado en su interior. En el modelado del serpentín además se deberá considerar el efecto de la consdensación del vapor que circula por este por medio de una constante de nivel de humedad (\lambda).
 
 
-\subsection{Balance del energía}
-El dispositivo requiere que el difencial de volumen sea constante por lo que el volumen que entra sea igual al de entrada.
+
+\subsection{Suposiciones importantes para el modelado}
+
+\begin{itemize}
+    
+\item Se supone un fluido incompresible, por lo que el volumen del líquido se mantiene constante.
+
+\item Se supone un flujo laminar para el líquido transportado en el serpentín.
+
+\item Se desprecian las pérdidas de calor a través del tanque.
+\end{itemize}
+
+
+\subsection{Asignación}
+
+Las variables de estado están dadas por:
+
+\begin{itemize}
+
+\item $T(t)$: Temperatura en el tanque intercambiador
+\item $T_s(t)$: Temperatura del serpentín
+\end{itemize}
+
+Con las entradas:
+\begin{itemize}
+\item $T_i(t)$: Temperatura de flujo de entrada en tanque intercambiador
+\item $w(t)$ Caudal del vapor que pasa por el serpentín
+\end{itemize}
+
+\subsection{Balance de energía}
+El dispositivo requiere que el diferencial de volumen sea constante por lo que el volumen que entra sea igual al de entrada.
 \begin{equation}
-\frac{\mathrm{d}\rho V }{\mathrm{d} t} = f_1\rho  - f_2 
+\rho \frac{\mathrm{d} V }{\mathrm{d} t} = f_1 (t) \rho  - f_2 (t) \rho
 \label{eq:volumen}
 \end{equation}
 
-Para un correcto funcionamiento del intercambiador es necesario que los flujos de entrada y salida sean iguales.
+Para un correcto funcionamiento del intercambiador es necesario que los flujos de entrada y salida sean iguales y constantes.
 \begin{equation}
-    f_1 = f_2 = f
+    f_1(t) = f_2(t) = f(t)
     \label{eq:Flujos}
 \end{equation}
+
+Por lo tanto el volumen será constante.
 
 \subsection{Balance de energía en el intercambiador}
 Para mantener el balance del fluido contenido en el intercambiador se determina la siguiente ecuación: \\
  \begin{equation}
-v_{\rho }C_{V}\frac{\mathrm{d} T(t)}{\mathrm{d} t}= f(t)\rho C_{p}T_{i}+UA[T_{s}-T(t)]-f(t)\rho C_{p}T(t)
+V \rho C_{V}\frac{\mathrm{d} T(t)}{\mathrm{d} t}= f(t)\rho C_{p}T_{i}(t) +UA[T_{s}(t)-T(t)]-f(t)\rho C_{p}T(t)
 \label{eq:BalanFlui}
  \end{equation}
-Con $V=$ Volumen del intercambiador en $m^3$, A el área de transferencia de calor en $m^2$ y $T_s(s)$ la temperatura del líquido primario del serpentín en $^{\circ}$K.
+Con $V$ Volumen del intercambiador en $m^3$, $\rho$ la densidad del líquido en el intercambiador en $kg/ m^3$, A el área de transferencia de calor en $m^2$ y $T_s(s)$ la temperatura del líquido primario del serpentín en $^{\circ}$K.
 
 \subsection{Balance de energía en el serpentín}
 A través del serpentín, que está sumergido y que transporta el líquido que introduce el calor al sistema debe conservar balance de energía según la ecuación: \\
 \begin{equation}
-C_{M}\frac{\mathrm{d} T_{s}(t)}{\mathrm{d} t} = w(t)\lambda - UA[T_{t}- T(t)]
+C_{M}\frac{\mathrm{d} T_{s}(t)}{\mathrm{d} t} = w(t)\lambda - UA[T_s (t)- T(t)]
 \label{eq:EnergSerp}
 \end{equation}
 
-con w(t) del flujo de vapor en $kg/s$ y $C_M$ es la capacidad calórica del metal del serpentín en $J/^{\circ}$K; además debe cumplirse que el $C_V$ del líquido contenido en el intercambiador y el $C_p$ de la masa que que se quiere calentar seam aproximadamente iguales. También que la temperatura de la corriente de alimentación del fluido primario se mantenga constante.
+con w(t) del flujo de vapor en $kg/s$ y $C_M$ es la capacidad calórica del metal del serpentín en $J/^{\circ}$K; además debe cumplirse que el $C_V$ del líquido contenido en el intercambiador y el $C_p$ de la masa que que se quiere calentar sean aproximadamente iguales. También que la temperatura de la corriente de alimentación del fluido primario se mantenga constante.
 Además, las incognitas del modelo son cuatro:
-\newpage
 \begin{itemize}
     \item T    temperatura del líquido en el intercambiador.
-    \item $T_s$   temperatura del líquido primario.
+    \item $T_s$   temperatura del líquido en serpentín.
     \item $\lambda$   flujo de corriente del líquido.
     \item w    flujo de vapor
 \end{itemize} 
 
 
-\subsection{Linealización y Transformada de Laplace}
+\subsection{Transformada de Laplace}
 Con el fin de analizar la respuesta controlada del proceso se requiere linealizar las ecuaciones del modelo, en función del tiempo.
-De ahí que se obtiene el balance de energía linealizado a través del intercambiador a partir de la ecuación \ref{eq:BalanFlui}
+De ahí que se obtiene el balance de energía linealizado a través del intercambiador a partir de la ecuación \ref{eq:BalanFlui}.
+
 \begin{equation}
- s=q   
+V_{\rho \;} C_V \frac{dT \left(t\right)\;}{\;d\left(t\right)}=\rho \;C_{P\;} \left(T_i(t) -T(t) \right)f\left(t\right)+\mathrm{UA}T  _S \left(t\right)-\left(\mathrm{UA}+f(t) \rho \;C_P \right)T \left(t\right)
 \end{equation}
+
+También expresada como en \ref{eq:uno}:
+
+\begin{equation}
+    \tau \;\frac{dT\left(t\right)}{\;d\left(t\right)}+T\left(t\right)=K_F f\left(t\right)+K_s T_s \left(t\right)
+    \label{eq:uno}
+\end{equation}
+
+
+donde:
+
+\begin{equation}
+    \tau =\frac{V_{\rho \;} C_p }{{\;\mathrm{UA}+f(t) \rho } {C_P }}\;
+\end{equation}
+
+\begin{equation}
+ K_F =\frac{\rho \;C_p \left(T_i (t) -T(t) \right)}{\mathrm{UA}+f(t) \rho C_P } 
+\end{equation}
+
+\begin{equation}
+K_s =\frac{\mathrm{UA}}{\mathrm{UA}+f(t) \rho C_P  } 
+\end{equation}
+
+Se tiene también el balance de energía a través del serpentín linealizado:
+
+\begin{equation}
+C_M \frac{dT  _S \left(t\right)}{\;d\left(t\right)}=w\left(t\right)\lambda -\mathrm{UA}T  _S\left(t\right)+\mathrm{UA}T \left(t\right)
+\label{eq:dos}
+\end{equation}
+
+También expresada como:
+
+\begin{equation}
+\tau  _C \frac{dT  _S \left(t\right)}{\;d\left(t\right)}+T  _S \left(t\right)=T \left(t\right)+K_w
+\end{equation}
+
+Con:
+
+\begin{equation}
+\tau  _C =\frac{C_M }{\mathrm{UA}}
+\end{equation}
+
+\begin{equation}
+K_W =\frac{\lambda }{\mathrm{UA}}\;
+\end{equation}
+
+Las funciones de transferencias relevantes para este sistema se obtienen al aplicar la transformada de Laplace para las ecuaciones \ref{eq:uno} y \ref{eq:dos}.
+
+Para el líquido a través del intercambiador la ecuación \ref{eq:tres}.
+
+\begin{equation}
+T \left(s\right)=\frac{K_F }{\tau s+1}F\left(s\right)+\frac{K_S }{\tau s+1}T_s \left(s\right)
+\label{eq:tres}
+\end{equation}
+
+Mientras que para el vapor a través del serpentín la ecuación \ref{eq:cuatro}.
+
+
+\begin{equation}
+T_s \left(s\right)=\frac{1}{\tau  _C s+1}T \left(s\right)+\frac{K_W }{\tau_C s+1}W\left(s\right)
+\label{eq:cuatro}
+\end{equation}
+
+A partir de las dos funciones transferencia anteriores se puede asegurar que el modelo cuenta con dos variables de estado, con dos variables de entrada. Sustituyendo la ecuación \ref{eq:cuatro} en la ecuación \ref{eq:tres}, se obtiene la función de transferencia de la temperatura en el intercambiador con respecto a las variables de entrada:
+
+
+
+\begin{equation}
+T \left(s\right)=\frac{K_W K_S }{\left(\tau  _C s+1\right)\left(\tau s+1\right)-K_{S\;} }W\left(s\right)+\frac{K_F \left(\tau  _C s+1\right)}{\left(\tau  _C s+1\right)\left(\tau s+1\right)-K_{S\;} }F\left(s\right)
+\end{equation}
+
+En donde:
+
+\begin{equation}
+G_W \left(s\right)=\frac{K_W K_S }{\left(\tau_C s+1\right)\left(\tau s+1\right)-K_S }
+\end{equation}
+
+\begin{equation}
+G_F \left(s\right)=\frac{K_F \left(\tau  _C s+1\right)}{\left(\tau  _C s+1\right)\left(\tau s+1\right)-K_S }
+\end{equation}
+
+%\subsection{Dinámica de la válvula de control}
+
+%Para una válvula de igual porcentaje con caída de presión constante se tiene la función de transferencia en \ref{eq:cinco}.
+
+%\begin{equation}
+%G_V \left(s\right)=\frac{W\left(s\right)}{M\left(s\right)}=\frac{K_V }{\tau  _V s+1}
+%\label{eq:cinco}
+%\end{equation}
+
+%Con $K_V$ la ganancia de la válvula calculada de la siguiente forma:
+
+%\begin{equation}
+%K_V =\frac{\bar{w} \mathrm{ln}\left(a\right)}{100}
+%\end{equation}
+
+%\subsection{Dinámica del sensor transmisor}
+
+%\begin{equation}
+%%H\left(s\right)=\frac{C\left(s\right)}{T\left(s\right)}=\frac{K_T }{\tau  _T s+1}
+%\end{equation}
+
+%\begin{equation}
+%K_T =\frac{100-0}{200-100}=1\ldotp 0\frac{TO}{^{\circ} F\;}
+%\end{equation}
+
+\subsection{Parámetros a utilizar en simulación}
+
+\begin{itemize}
+   
+ \item $A=241.5 \; pie^2$
+
+ \item $C_m = 265.7 \; BTU/ ^{\circ}F$
+
+%\item $\tau _T = 0.75 \; min$
+
+\item $\tau _C = 0.524 \; min$
+
+\item $K_W = 1.905 \; ^{\circ}F/(lb/min)$
+
+%\item $K_SP = K_T = 1.905 ^{\circ}F/(lb/min)$
+
+\item $V = 120 \; pie^3$
+
+\item $\tau _V = 0.20 \; min$
+
+\item $K_F = -2.06  \; ^{\circ}F/(pie^3 /min)$
+
+\item $K_S = 0.383 \; ^{\circ}F/^{\circ}F$
+
+Parámetros tomados de \cite{Natividad}, que toman como referencia los patrones de mediciones más usuales en la industria. Esto considerando que se pueden utilizar diferentes tipos de aceites y líquidos térmicos.
+\end{itemize}
+
+\newpage
+
+Para la elaboración de la tabla [\ref{Tab:dimencionesserpentin}] se empleo los anexos de dimenciones de tubos de aceros al carbono obtenido de  \cite{vemacero}. Además, se utilizó las dimenciones propuestas en \cite{Burbano} [Ver Anexo] asimismo, para el cálculo del el aréa del serpentín se usó la ecuación $A_{s} = \frac{\pi D^2_{nom}}{4}$ y el volumen $V_{s} = A_{s}L_{s}$.
+
+\begin{table*} [!ht]
+\caption{Dimensiones del serpentín de un tubo de acero al carbono(AISI 1010)[Elaboración propia]}
+
+\label{Tab:dimencionesserpentin}
+\begin{center}
+\begin{tabular}{| c | c | }
+\hline
+
+\cline{1-2}
+\textbf{Dimensiones}& \textbf{Valores} \\
+\hline 
+
+Diametro Nominal \ [$mm$] & 15  \\
+\hline
+Espesor \ [$mm$] & 2.77   \\
+\hline
+Longitud Total \ [$mm$] & 1644 \\
+\hline
+Area \ [$m^2$]  & 0.00017671   \\
+\hline
+Volumen \ [$m^3$] & 0.00029052   \\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+
+\begin{itemize}
+    \item $A_{s}$ = Aréa del serpentín. 
+    \item $E_{s}$ = Espesor del sepertín.
+    \item $L_{s}$ = Longitud total del serpentín.
+    \item $D_{s}$ = Diametro nominal del serpentín.
+    \item $V_{s}$ = Volumen del serpentín.
+\end{itemize}
+
+
+
+\begin{table*} [!ht]
+\caption{Dimensiones de la carcasa de un tubo de acero inoxidable (AISI 302)[Elaboración propia]}
+
+\label{Tab:dimencioncarcas}
+\begin{center}
+\begin{tabular}{| c | c | }
+\hline
+
+\cline{1-2}
+\textbf{Dimensiones}& \textbf{Valores} \\
+\hline 
+
+Diametro Nominal \ [$mm$] & 187  \\
+\hline
+Espesor \ [$mm$] & 13   \\
+\hline
+Longitud Total \ [$mm$] & 670 \\
+\hline
+Area \ [$m^2$]  & 0.027465   \\
+\hline
+Volumen \ [$m^3$] & 0.018401   \\
+\hline
+Diámetro de entrada $F$ [$mm$] & 26 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+Los valores de los parámetros empleados para el dimencionado de la carcasa son los siguientes:
+
+\begin{itemize}
+    \item $D_{c}$ = Diámetro nominal de la carcasa.
+    \item $E_{c}$ = Espesor de la carcasa.
+    \item $L_{c}$ = Longitud total de la carcasa.
+    \item $A_{c}$ = Área de la carcasa.
+    \item $V_{c}$ = Volumen de la carcasa.
+    \item $Di_{c}$ = Diamentro de entrada del fluido.
+\end{itemize}
+
+
+
+
+En la tabla [\ref{tab:flujodemasa}] los datos empleados son a $1 \ atm$, estos valores se tomarón de las referencias \cite{yunus} \cite{Warren} [ver Anexos]. Este es un ejemplo de los valores de los parámetros para el cálculo de los flujos de masa tanto del agua como del serpentín, los cuales varían según la temperatura del fluido, asimismo los valores de los caudales pueden variar.
+
+\begin{table*}[!ht]
+\caption{Flujos de calor de masas del agua y el aire a $1 atm$  [Elaboración propia]}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+& \multicolumn{4}{c|}{Calor por flujo de masa} \\
+\cline{2-5}
+& Temperatura$[^{\circ}C]$ & Densidad$[\frac{Kg}{m^3}]$ & Capacidad calorifica$[\frac{J}{KgK}]$ & Caudal$[\frac{m^3}{s}]$ \\
+\hline \hline
+\multirow{1}{1cm}{Agua} & 10 $\approx$ 283.15 K & 999.77 & 4.193 & 0.5\\ \cline{1-5}
+\cline{1-4}
+Aire & 40 $\approx$ 313.15 K & 1.127 & 1007 & 2 \\ \cline{1-5}
+\end{tabular}
+\label{tab:flujodemasa}
+\end{table*}
+
+\begin{itemize}
+    \item $Ti_{h}$ = Temperatura inicial del agua.
+    \item $\rho i_{h}$ = Densidad inicial del agua.
+    \item $Cpi_{h}$ = Capacidad calorifica del agua.
+    \item $Ti_{a}$ = Temperatura inicial del aire.
+    \item $\rho i_{a}$ = Densidad inicial del aire.
+    \item $Cp i_{a}$ = Capacidad calorifica del aire.
+\end{itemize}
+
+Las resistencias térmicas de la carcasa de acero inoxidable (AISI 302) y el serpentín de acero al carbono (AISI 1010), se calcularon mediante la ecuación [\ref{eq:resistencia termica}] además, para los valores de conductividades térmicas se emplearon los que se cuentran en Anexos. La resistencia térmica esta dada en $[\frac{^{\circ}C s}{J}]$ y la conductividad térmica en $[\frac{W}{m ^{\circ}C}]$, cuyos valores varían según la temperatura la cual esta dada en Kelvin.
+
+Suponiendo que la temperatura máxima del serpentín (AISI 1010) y  es de $400K$ Su conductividad térmica es de $58.7$ [\ref{fig:propiedadesmetales1}] y de igual forma,la temperatura máxima de la carcasa (AISI 302) es de $400 K$ cuya conductividad térmica es de $17.3$ [\ref{fig:propiedadesmetales2}].
+
+\begin{itemize}
+    \item $R_{TSc}$ = Resistencia térmica del serpetín-carcasa $[\frac{^{\circ}C s}{J}]$.
+     \item $R_{TCa}$ = Resistencia térmica de la carcasa-ambiente $[\frac{^{\circ}C s}{J}]$.
+     \item $\sigma_{s}$ = Conductividad térmica de la serpentín $[\frac{W}{m ^{\circ}C}]$.
+     \item $\sigma_{c}$ = Conductividad térmica de la carcasa $[\frac{W}{m ^{\circ}C}]$.
+\end{itemize}
+
+\begin{equation}
+R_{T} = \frac{L}{\sigma A} \ [\frac{^{\circ}C s}{J}] \label{eq:resistencia termica}\\ 
+\end{equation} 
+
+\begin{equation}
+R_{TSc} = \frac{L_{s}}{\sigma_{Sc} A_{s}} = 158.49[\frac{^{\circ}C s}{J}]   \label{eq:resistencia termica serpentin}\\
+\end{equation} 
+
+\begin{equation}
+R_{TCa} = \frac{L_{c}}{\sigma_{Ca} A_{c}} = 1.410[\frac{^{\circ}C s}{J}] \label{eq:resistencia termica carcasa}
+\end{equation} 
+
+De la ecuación [\ref{eq:captermserpentin}][\ref{eq:resistencia termica carcasa}] se puede obtener la capacidad térmica tanto del cerpetín (AISI 1010) como el de la carcasa (AISI 302). Tomando en cuenta que el área del serpetín es el espesor del tubo y no el área total por lo que se obtiene $As_{e} = \frac{\pi (2.77mm)^{2}}{4} = 6.026 \ 10^{-6}m^{2}$ y de igual forma el área de la carcasa $Ac_{e} = \frac{\pi (13mm)^{2}}{4} = 132.733 \ 10^{-6}m^{2}$. De [\ref{fig:propiedadesmetales1}] se obtiene una densidad y capacidad calorífica del serpentín respectivamente de $7832 $ y $559$ y de [\ref{fig:propiedadesmetales2}] se obtiene una densidad y capacidad calorífica respectivamente para la carcasa de $8055$ y $512$ ambos con su temperatura máxima de $400K$. Por lo que evaluando los valores se obtiene: 
+
+\begin{align} 
+Ct_{s} = M_{s}Cp_{s} = Cp_{s} \rho_{s}V_{s} = Cp_{s} \rho_{s}A_{s}L_{s} = 43.373[\frac{J}{K}] \label{eq:captermserpentin}\\ 
+Ct_{c} = M_{c}Cp_{c} = Cp_{c} \rho_{c}V_{c} = Cp_{c} \rho_{c}A_{c}L_{c} = 366.766 [\frac{J}{K}] \label{eq:capatermicarcasa}
+\end{align}
+
+Donde:
+
+\begin{itemize}
+    \item $Ct_{s}$ = Capacidad térmica del serpentín $[\frac{J}{K}]$ 
+    \item $M_{s}$ = Masa del serpentín $[Kg]$
+    \item $Cp_{s}$ = capacidad calorífica del  serpentín $[\frac{J}{Kg\ K}]$
+    \item $Ct_{c}$ = Capacidad térmica del carcasa $[\frac{J}{K}]$
+    \item $M_{c}$ = Masa del carcasa $[Kg]$
+    \item $Cp_{c}$ = capacidad calorífica del carcasa $[\frac{J}{Kg\ K}]$
+    
+\end{itemize}
+
+De igual manera, para obtener los resistores térmicos el primero del serpentín a la carcasa y el otro de la carcasa al ambiente ambos mediante un flujo de calor. Sustituyendo los valores de [\ref{eq:resistencia termica serpentin}][\ref{eq:resistencia termica carcasa}] en [\ref{eq:resistor ser-car}][\ref{eq:resistor car-amb}]
+
+\begin{itemize}
+    \item $W_{sc}$ = Flujo de calor del serpentín a la carcasa $[\frac{J}{s}]$.
+    \item $W_{ca}$ = Flujo de calor de la carcasa al ambiente $[\frac{J}{s}]$.
+    \item $T_{s}$ = Temperatura del serpentín $[K]$.
+    \item $T_{c}$ =Temperatura del carcasa $[K]$.
+    \item $T_{amb}$ =Temperatura del ambiente $[K]$.
+\end{itemize}
+
+\begin{equation}
+W_{sc} = \frac{T_{s} - T_{c}}{R_{TSc}} = \frac{T_{s} - T_{c}}{158.49} \label{eq:resistor ser-car}\\ 
+\end{equation} 
+
+
+\begin{equation}
+W_{ca} = \frac{T_{c} - T_{amb}}{R_{TCa}} = \frac{T_{c} - T_{amb}}{1.410} \label{eq:resistor car-amb}
+\end{equation} 
+
+La figura [\ref{fig:DCLtermico}] de abajo presenta el diagrama de cuerpo libre térmico.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Imagines/DCLtermico.png}
+\caption{Diagrama de cuerpo libre térmico.}
+\label{fig:DCLtermico}
+\end{figure}
+
+\begin{itemize}
+    \item $W_{is}$ = calor por un flujo de masa entrando al serpentín. 
+    \item $W_{os}$ = calor por un flujo de masa saliendo del serpentín.
+    \item $W_{sc}$ = calor por un flujo de masa serpentín-carcasa.
+    \item $W_{ca}$ = calor por un flujo de masa carcasa-ambiente.
+    \item $W_{ic}$ = calor por un flujo de masa entrando a la carcasa.
+    \item $W_{oc}$ = calor por un flujo de masa saliendo de la  carcasa.
+\end{itemize}
+
+Ley de calor de fourier para el serpentín:
+
+\begin{equation} 
+Ct_{s} \dot T_{s} = W_{is} - W_{os} - W_{sc}\\
+\end{equation} 
+
+\begin{equation} 
+Ct_{s} \dot T_{s} = \rho_{is}Q_{is}Cp_{is}T_{is} - \rho_{os}Q_{os}Cp_{os}T_{os} - \frac{T_{s}-T_{c}}{R_{TSc}}
+\end{equation} 
+
+Si las densidades de entrada y salida son iguales $\rho_{is} = \rho_{os} = \rho$, los caudales son iguales $Q_{is} = Q_{os} = Q $ y sus capacidades calorífica de igual forma $Cp_{is} = Cp_{os} = Cp$ asimismo, $T_{os} = T_{s}$:
+
+\begin{equation*}
+Ct_{s} \dot T_{s} = \rho Q Cp T{is} - \rho Q Cp T_{s} - \frac{T_{s}-T_{c}}{R_{TSc}}\\
+\end{equation*} 
+
+\begin{equation*}
+Ct_{s} \dot T_{s} = \rho Q Cp T{is} - T_{s} [\rho Q Cp + \frac{1}{R_{TSc}}] + \frac{T_{c}}{R_{TSc}}
+\end{equation*} 
+
+\begin{equation}
+\dot T_{s} = \frac{\rho Q Cp}{Ct_{s}} T{is} - T_{s} \frac{1}{Ct_{s}} [\rho Q Cp + \frac{1}{R_{TSc}}] + \frac{1}{Ct_{s}R_{TSc}}T_{c}
+     \label{eq:eqdifftempserpentin}
+\end{equation}
+
+Ley de calor de Fourier para la carcasa:
+
+\begin{equation*} 
+Ct_{c} \dot T_{c} = W_{sc} + W_{ic} - W_{oc} - W_{ca}
+\end{equation*}
+
+\begin{equation*} 
+Ct_{c} \dot T_{c} = \frac{T_{s} - T_{c}}{R_{TSc}} + \rho_{ic}Q_{ic}Cp_{ic}T_{ic} - \rho_{oc}Q_{oc}Cp_{oc}T_{oc} - \frac{T_{c} - T_{amb}}{R_{TCa}}
+\end{equation*}
+
+Si las densidades de entrada y salida son iguales $\rho_{ic} = \rho_{oc} = \rho$, los caudales son iguales $Q_{ic} = Q_{oc} = Q $ y sus capacidades calorífica de igual forma $Cp_{ic} = Cp_{oc} = Cp$ asimismo, $T_{oc} = T_{c}$:
+
+\begin{equation*} 
+Ct_{c} \dot T_{c} = \frac{T_{s} - T_{c}}{R_{TSc}} +\rho Q Cp T_{ic} - \rho Q Cp T_{c} - \frac{T_{c} - T_{amb}}{R_{TCa}}
+\end{equation*}
+
+\begin{equation*} 
+Ct_{c} \dot T_{c} = \frac{1}{R_{TSc}}T_{s} - [\frac{1}{R_{TSc}} + \frac{1}{R_{TCa}} + \rho Q Cp]T_{c} + \rho Q Cp T_{ic} + \frac{1}{R_{TCa}}T_{amb}
+\end{equation*}
+
+\begin{equation}
+ \dot T_{c} = \frac{1}{Ct_{c}R_{TSc}}T_{s} - \frac{1}{Ct_{c}} [\frac{1}{R_{TSc}} + \frac{1}{R_{TCa}} + \rho Q Cp]T_{c} + \frac{\rho Q Cp}{Ct_{c}} T_{ic} + \frac{1}{Ct_{c}R_{TCa}}T_{amb}
+     \label{eq:eqdifftempserpentin}
+\end{equation}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -756,13 +1211,62 @@ De ahí que se obtiene el balance de energía linealizado a través del intercam
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=1.2\textwidth]{proprtiies1.png}
+\includegraphics[width=1.2\textwidth]{Imagines/Propiedtermicasgases.png}
+\caption{Propiedades térmicas del aire.[Tomado de \cite[p\ 868]{Mills}}]
+\label{fig:propiedadesgases}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.2\textwidth]{Imagines/propaire1atm.png}
 \caption{Propiedades del aire a 1 atm de presión .[Tomado de \cite[p\ 1006]{yunus}}
 \label{fig:propiedadesaire}
 \end{figure}
 
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.2\textwidth]{Imagines/Varconductermicatemperatura.png}
+\caption{ Variación de la conductividad térmica $k$ $[\frac{W}{mK}]$ en metales sólidos. Tomado de \cite[p\ 855]{Mills}}
+\label{fig:conducciontermica}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.2\textwidth]{Imagines/Varcapacalorifica.png}
+\caption{Variación de la capacidad calorífica $c$ $[\frac{J}{KgK}]$ en metales sólidos. Tomado de \cite[p\ 856]{Mills}}
+\label{fig:variacioncalorifica}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.2\textwidth]{Imagines/propiedadesmet1.png}
+\caption{Propiedades de metales sólidos a diferentes temperaturas en Kelvin. Tomado de \cite[p\ 1009]{yunus}}
+\label{fig:propiedadesmetales1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.2\textwidth]{Imagines/propiedadesmet2.png}
+\caption{Propiedades de metales sólidos a diferentes temperaturas en Kelvin. Tomado de \cite[p\ 1010]{yunus}}
+\label{fig:propiedadesmetales2}
+\end{figure}
+
+
+
 \newpage
 \includepdf[pages=31-32]{PDF/thermophysical-properties.pdf}
+
+\newpage
+\includepdf[pages=1-3]{PDF/dimensionesdetuberiaaceroalcarbono.pdf}
+
+\newpage
+\includepdf[pages=79-84]{PDF/Disenomodulointercambiadorcalorcorazatubos}
+
+\newpage
+\includepdf[pages=-]{PDF/densidadaguadiferentestemperaturas.pdf}
+
 
 \newpage
 \begin{thebibliography}{}
@@ -779,6 +1283,9 @@ Lopez Jose Costa. (1993). Curso de química técnica: introducción a los proces
 \bibitem{Mills}
 Mills,Anthony F.(1997).\emph{Transferencia de Calor}.University of California,Los Angeles.McGRAW-HLL. 
 
+\bibitem{Natividad}
+Natividad Rodríguez, Erik & Tovar León, Héctor (2014). Diseño de una planta virtual de un intercambiador de color en Matlab, con enlace al sistema de control FreeLancer. Instituto politécnico nacional, México.
+
 \bibitem{Sadik}
 Sadik,K.Hongtan, L.(1997).\emph{Heat Exchangers selection,rating and thermal design}.Department of Mechanical Engineering,University of Miami,Coral Gables,Florida.Editorial CRC Press.
 
@@ -791,6 +1298,13 @@ Warren M. Rohsenow; James P. Hartnett; Young I. Cho.(1998).\emph{Handbook of Hea
  \bibitem{yunus}
  Yunus A. Cengel; John M. Cimbala; Robert H. Tuner.(2012) \emph{Fundamentals of Thermal-fluid sciences}.New York. McGraw-Hill Education, fourth edition
 
+\bibitem{Burbano}
+Burbano Rojas,Sonia Paula .(2014).\emph{Diseño de un módulo de intercambiador de calor de coraza y tubos}.Universidad de Santo Tomás,
+Facultad de ingeniería mecánica,
+división de ingenierias,Bogota D.C.Recuperado el 25 de Octubre de 2019.De https://repository.usta.edu.co/bitstream/handle/11634/719/Diseno$\%20$de$\%20\%$un$\%20$modulo$\%20$de$\%20$intercambiador\%20$de$\%20$calor$\%20$de$\%20$coraza$\%20$y$\%20$tubos.pdf?sequence=1&isAllowed=y
+
+\bibitem{vemacero}
+Grupo Vemacero, C.A.\emph{TUBERIA DE ACERO AL CARBONO API 5L / ASTM A53 / A106}.Recuperado el 29 de Octubre de 2019.De https://www.vemacero.com/Tablas/A53MP.pdf
 
 \end{thebibliography}{}
 
